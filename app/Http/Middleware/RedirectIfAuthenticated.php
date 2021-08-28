@@ -27,6 +27,19 @@ class RedirectIfAuthenticated
             }
         }
 
+        switch ($guard) {
+            case 'customer':
+                if (Auth::guard($guard)->check()) {
+                    return redirect('home');
+                }
+                break;
+            default:
+                if (Auth::guard($guard)->check()) {
+                    return redirect('/dashboard/index');
+                }
+                break;
+        }
+
         return $next($request);
     }
 }

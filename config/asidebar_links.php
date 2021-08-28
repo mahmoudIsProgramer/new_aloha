@@ -1,0 +1,56 @@
+<?php
+
+return [
+  'modules' => [
+
+    'users' => 'c,r,u,d',
+    'roles' => 'c,r,u,d',
+
+    'categories' => 'c,r,u,d',
+    'subcategories' => 'c,r,u,d',
+    'subsubcategories' => 'c,r,u,d',
+    'brands' => 'c,r,u,d',
+    // 'variations' => 'c,r,u,d',
+    // 'options' => 'c,r,u,d',
+    'colors' => 'c,r,u,d',
+    'sizes' => 'c,r,u,d',
+    'rams' => 'c,r,u,d',
+    'capacities' => 'c,r,u,d',
+    'sims' => 'c,r,u,d',
+    'materials' => 'c,r,u,d',
+    'types' => 'c,r,u,d',
+    'specifications' => 'c,r,u,d',
+    'products' => 'c,r,u,d',
+    // 'offers' => 'c,r,u,d',
+    // 'gifts' => 'c,r,u,d',
+    // 'stocks' => 'c,r,u,d',
+    'sellers' => 'c,r,u,d',
+    'customers' => 'c,r,u,d',
+    // 'premiums' => 'c,r,u,d',
+    // 'wallet_history' => 'c,r,u,d',
+    'orders' => 'c,r,u,d',
+    // 'carts' => 'c,r,u,d',
+    'promocodes' => 'c,r,u,d',
+    'sliders' => 'c,r,u,d',
+    'staticPages' => 'c,r,u,d',
+    'blogs' => 'c,r,u,d',
+    'deliveries' => 'c,r,u,d',
+    'taxes' => 'c,r,u,d',
+    // 'testmonials' => 'c,r,u,d',
+    'reviews' => 'c,r,u,d',
+    'cities' => 'c,r,u,d',
+    'states' => 'c,r,u,d',
+    // 'withdraw_funds' => 'c,r,u,d',
+    'banners' => 'c,r,u,d',
+    'socail' => 'c,r,u,d',
+    'site_options' => 'c,r,u,d',
+    'inbox' => 'c,r,u,d',
+    // 'subscribers' => 'c,r,u,d',
+    // 'complaints' => 'c,r,u,d',
+    // 'backgrounds' => 'c,r,u,d',
+
+  ],
+
+  'sellers' => [],
+
+];

@@ -6,13 +6,22 @@ use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     *
-     * @return void
-     */
-    public function run()
-    {
-        // \App\Models\User::factory(10)->create();
-    }
+
+  public function run()
+  {
+    $this->call(LaratrustSeeder::class);
+    $this->call(UsersTableSeeder::class);
+    $this->call(CityTableSeeder::class);
+    $this->call(StaticPageTableSeeder::class);
+    $this->call(VariationTableSeeder::class);
+    $this->call(CategoryTableSeeder::class);
+    $this->call(BrandTableSeeder::class);
+    $this->call(SellerTableSeeder::class);
+    $this->call(BannerTableSeeder::class);
+    // $this->call(SliderTableSeeder::class);
+    // $this->call(ProductTableSeeder::class);
+    // $this->call(CustomerTableSeeder::class);
+    // $this->call(BlogTableSeeder::class);
+
+  }
 }

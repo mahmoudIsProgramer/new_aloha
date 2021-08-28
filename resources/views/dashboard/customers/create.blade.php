@@ -1,0 +1,240 @@
+@extends('layouts.dashboard.app')
+<?php
+$page = 'customers';
+$title = trans('site.customers');
+?>
+@section('title_page')
+    {{ $title }}
+@endsection
+
+@push('js')
+
+    <!-- start get states and regoins and streests  -->
+    <script type="text/javascript">
+        $(document).ready(function() {
+
+
+            // change city
+            $(document).on('change', '.city_id', function() {
+
+
+                var city_id = $('.city_id option:selected').val();
+                var token = $("input[name='_token']").val();
+                $('.states').html('');
+                $('.regoins').html('');
+                if (city_id > 0) {
+                    $.ajax({
+
+                        url: "{!! route('dashboard.getStates') !!}",
+                        type: 'get',
+                        dataType: '',
+                        data: {
+                            city_id: city_id,
+                            getData: 'states',
+                            select: ''
+                        },
+                        success: function(data) {
+                            $('.states').html(data);
+                        }
+                    });
+                }
+            }); // end city change
+
+            // change state
+            // $(document).on('change','.state_id',function () {
+
+            //     var state_id = $('.state_id option:selected').val();
+            //     var token = $("input[name='_token']").val();
+            //     $('.regoins').html('') ;
+            //     if ( state_id > 0 ){
+            //         $.ajax({
+
+            //             url:"{!! route('dashboard.getRegoins') !!}",
+            //             type:'get',
+            //             dataType:'',
+            //             data:{ state_id:state_id,getData:'regoins',select:''  },
+            //             success: function (data) {
+            //                 $('.regoins').html(data) ;
+            //             }
+            //         });
+            //     }
+            // }); // end state change
+
+            // states
+            @if (old('state_id'))
+
+                @php
+                    $city_id = old('city_id');
+                    $state_id = old('state_id');
+                @endphp
+                $.ajax({
+                url:'{!! route('dashboard.getStates') !!}',
+                type:'get',
+                dataType:'html',
+                data:{ city_id:{{ $city_id }},getData:'states' , select:{{ $state_id }} },
+                success: function (data) {
+                $('.states').html(data)
+                }
+                });
+
+            @endif
+
+
+        });
+    </script>
+
+
+@endpush
+
+
+@section('content')
+
+
+    <div class="content-wrapper">
+        <section class="content-header">
+
+            <h1>@lang('site.customers')</h1>
+
+            <ol class="breadcrumb">
+                <li><a href="{{ route('dashboard.index') }}"><i class="fa fa-dashboard"></i> @lang('site.dashboard')</a>
+                </li>
+                <li><a href="{{ route('dashboard.customers.index') }}"> @lang('site.customers')</a></li>
+                <li class="active">@lang('site.add')</li>
+            </ol>
+
+        </section>
+
+        <section class="content">
+
+            <div class="box box-primary">
+
+                <div class="box-header">
+                    <h3 class="box-title">@lang('site.add')</h3>
+                </div><!-- end of box header -->
+                <div class="box-body">
+
+                    @include('partials._errors')
+
+                    <form action="{{ route('dashboard.customers.store') }}" method="post" enctype="multipart/form-data">
+
+                        {{ csrf_field() }}
+                        {{ method_field('post') }}
+
+                        <div class="col-md-12">
+                            <div class="col-md-6">
+
+                                <div class="form-group">
+                                    <label>@lang('site.full_name')</label>
+                                    <input required="required" type="text" name="full_name" class="form-control"
+                                        value="{{ old('full_name') }}">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>@lang('site.email')</label>
+                                    <input required="required" type="text" name="email" class="form-control"
+                                        value="{{ old('email') }}">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>@lang('site.phone')</label>
+                                    <input required="required" type="phone" name="phone" class="form-control"
+                                        value="{{ old('phone') }}"
+                                        oninput="this.value = this.value.replace(/[^0-9.]/g, ''); this.value = this.value.replace(/(\..*)\./g, '$1');">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>@lang('site.image')</label>
+                                    <input type="file" id='image' name="image" class="form-control image2"
+                                        enctype="multipart/form-data" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <img src="{{ asset('uploads/default.png') }}" style="width: 100px"
+                                        class="img-thumbnail image-preview2" alt="">
+                                </div>
+
+                            </div>
+                            <div class="col-md-6">
+
+                                <div class="form-group">
+                                    <label>@lang('site.wallet')</label>
+                                    <input required="required" type="text" name="wallet" class="form-control"
+                                        value="{{ old('wallet') }}">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>@lang('site.status')</label>
+                                    <select name='status' class="form-control" required>
+                                        <option value="1" @if (old('status') == '1') selected @endif>@lang('site.Active')</option>
+                                        <option value="0" @if (old('status') == '0') selected @endif>@lang('site.In-Active')</option>
+                                    </select>
+                                </div>
+
+                                {{-- <div class="form-group">
+                                    <label>@lang('site.verified')</label>
+                                    <select name='verified' class="form-control" required>
+                                        <option value="1" @if (old('verified') == '1') selected @endif>@lang('site.Active')</option>
+                                        <option value="0" @if (old('verified') == '0') selected @endif>@lang('site.In-Active')</option>
+                                    </select>
+                                </div> --}}
+                                {{-- <div class="form-group">
+                                    <label>@lang('site.gender')</label>
+                                    <select name='gender' class="form-control" required>
+                                        <option value="male" @if (old('gender') == 'male') selected @endif>@lang('site.male')</option>
+                                        <option value="female" @if (old('gender') == 'female') selected @endif>@lang('site.female')</option>
+                                    </select>
+                                </div> --}}
+
+                                {{-- <div class="form-group">
+                                    <label>@lang('site.city')</label>
+                                    <select name='city_id' class="form-control city_id"   required >
+                                    <option value="">@lang('site.city')</option>
+                                    @foreach ($cities as $city)
+                                        <option value="{{$city->id}}" @if (old('city_id') == $city->id) selected
+                                          @endif>{{$city->name}}</option>
+                                          @endforeach
+                                          </select>
+                                      </div>
+
+                                      <label>@lang('site.state')</label>
+                                      <div class="states">
+                                      </div> --}}
+
+                                {{-- <label>@lang('site.regoin')</label>
+                                <div class="regoins">
+                                </div> --}}
+
+                                <div class="form-group">
+                                    <label>@lang('site.password')</label>
+                                    <input required="required" type="password" name="password" class="form-control">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>@lang('site.password_confirmation')</label>
+                                    <input required="required" type="password" name="password_confirmation"
+                                        class="form-control">
+                                </div>
+
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-primary"><i class="fa fa-plus"></i>
+                                        @lang('site.add') </button>
+                                </div>
+                            </div>
+
+
+                        </div>
+
+
+                    </form><!-- end of form -->
+
+                </div><!-- end of box body -->
+
+            </div><!-- end of box -->
+
+        </section><!-- end of content -->
+
+    </div><!-- end of content wrapper -->
+
+@endsection
