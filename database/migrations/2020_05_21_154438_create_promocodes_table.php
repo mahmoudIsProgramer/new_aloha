@@ -16,8 +16,8 @@ class CreatePromocodesTable extends Migration
       $table->string('code')->nullable();
       $table->string('title')->nullable();
       $table->text('description')->nullable();
-      $table->dateTime('startDateTime')->nullable();
-      $table->dataTime('endDateTime')->nullable();
+      $table->date('startDateTime')->nullable();
+      $table->date('endDateTime')->nullable();
       // $table->time('startTime')->nullable();
       // $table->time('endTime')->nullable();
       $table->integer('limit')->nullable();

@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-
-use Illuminate\Support\Facades\DB;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Laratrust\Traits\LaratrustUserTrait;
@@ -28,13 +26,19 @@ class Customer extends  Authenticatable
 
   public function getTotalCartAttribute()
   {
-    return $this->products->sum('totalCart');
+    // dd($this->productSellers);
+    return $this->productSellers->sum('productTotalInCart');
   } //end of image path attribute
 
-  public function products()
+  public function productSellers()
   {
-    return $this->belongsToMany(Product::class, 'customer_product',  'customer_id', 'product_id')->withPivot(['qty']);
+    return $this->belongsToMany(ProductSeller::class, 'customer_product_seller', 'customer_id', 'product_seller_id')->withPivot(['qty']);
   }
+
+  // public function products()
+  // {
+  //   return $this->belongsToMany(Product::class, 'customer_product_seller',  'customer_id', 'product_id')->withPivot(['qty']);
+  // }
 
   public function orders()
   {

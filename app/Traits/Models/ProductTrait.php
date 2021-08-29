@@ -114,7 +114,7 @@ trait ProductTrait
 
   function insertImages($attachments, $product_id)
   {
-    $attachments = MultipleUploadImages($attachments, 'product_images/');
+    $attachments = $this->MultipleUploadImages($attachments, 'product_images/');
 
     foreach ($attachments as $file_name) {
       $create = ProductImage::create([

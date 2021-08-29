@@ -23,11 +23,16 @@ class Seller extends  Authenticatable
 
   public function products()
   {
-    return $this->belongsToMany(Product::class, 'product_seller', 'seller_id', 'product_id')->withPivot([
-      'stock', 'selling_price', 'discount', 'sku', 'seller_notes', 'status',
+    return $this->belongsToMany(Product::class, 'product_seller', 'product_id', 'seller_id')->withPivot([
+      'id', 'stock', 'selling_price', 'discount', 'sku', 'seller_notes', 'status',
       // 'importance'
     ]);
   }
+
+  public function productSeller()
+  {
+    return $this->hasMany(ProductSeller::class);
+  } // end of user
 
   public function orders()
   {

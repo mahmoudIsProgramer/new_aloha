@@ -2,8 +2,6 @@
 
 namespace App\Traits\Models;
 
-use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\File;
 use Intervention\Image\Facades\Image;
@@ -44,6 +42,31 @@ trait UploadFileTrait
       ->save(public_path('uploads/' . $path . $req->hashName()));
     return   $req->hashName();
   }
+
+  // #multiple upload image
+  function MultipleUploadImages($requests, $path)
+  {
+
+    $data = [];
+    foreach ($requests as  $attach) {
+
+      Image::make($attach)
+        // ->resize(630, null, function ($constraint) {
+        //   $constraint->aspectRatio();
+        // })
+        ->save(public_path('uploads/' . $path . $attach->hashName()));
+      $data[] = $attach->hashName();
+
+
+      // $fileName = time().rand(1,100).'.'.$attach->getClientOriginalExtension();
+
+      // $attach->move( public_path('uploads/'.$path ) , $fileName );
+
+      // $data[] = $fileName;
+    }
+    return $data;
+  }
+
 
   // delete main image for model
   function removeImage($imageName, $path)

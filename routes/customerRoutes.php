@@ -1,5 +1,14 @@
 <?php
 
+use App\Models\ProductSeller;
+
+Route::get('test', function () {
+
+  $productSeller = ProductSeller::first();
+  dd($productSeller->total, $productSeller->discount, $productSeller->selling_price);
+  dd($productSeller->total);
+});
+
 # must guest
 Route::group(['prefix'  =>  'customer',  'as' => 'customer.', 'namespace' => "Frontend\AuthCustomer", 'middleware' => 'guest:customer'], function () {
   #login
@@ -22,9 +31,9 @@ Route::group(['prefix' => 'customer', 'as' => 'customer.', 'namespace' => "Front
   Route::get('edit_profile', 'ProfileController@edit_profile')->name('edit_profile');
 
   #orders
-  Route::get('orders', 'ProfileController@orders')->name('orders')->middleware('CheckPermission:make_order');
+  Route::get('orders', 'ProfileController@orders')->name('orders');
 
-  Route::get('orderDetails/{order}', 'ProfileController@orderDetails')->name('orderDetails')->middleware('CheckPermission:make_order');
+  Route::get('orderDetails/{order}', 'ProfileController@orderDetails')->name('orderDetails');
 
   Route::get('change_password_view', 'ProfileController@change_password_view')->name('change_password_view');
 
@@ -43,11 +52,11 @@ Route::group(['prefix' => 'customer', 'as' => 'customer.', 'namespace' => "Front
   Route::get('toggle_favorite', 'FavoirteController@toggle_favorite')->name('toggle_favorite');
 
   #Carts
-  Route::get('cart', 'CartController@cart')->name('cart')->middleware('CheckPermission:make_order');
+  Route::get('cart', 'CartController@cart')->name('cart');
 
-  Route::any('addToCart', 'CartController@addToCart')->name('addToCart')->middleware('CheckPermission:make_order');
+  Route::any('addToCart', 'CartController@addToCart')->name('addToCart');
 
-  Route::any('removeFromCart', 'CartController@removeFromCart')->name('removeFromCart')->middleware('CheckPermission:make_order');
+  Route::any('removeFromCart', 'CartController@removeFromCart')->name('removeFromCart');
 
   #checkout
   Route::get('checkout', 'OrderController@checkout')->name('checkout');
@@ -87,7 +96,7 @@ Route::group(['namespace' => "Frontend"], function () {
 
   Route::get('categories', 'HomeController@categories')->name('categories');
 
-  Route::get('product/{product}/{slug?}', 'ProductController@productDetails')->name('product');
+  Route::get('product/{product}/{slug?}', 'ProductController@productDetails')->name('product')->middleware('ConfirmProductHasAtLeastOneSeller');
 
   Route::get('products', 'ProductController@products')->name('products');
 

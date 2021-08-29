@@ -9,7 +9,7 @@ class CartFormRequest extends BaseRequest
 {
 
   public $rules = []; // end rules
-  protected $errorBag = 'cart';
+  // protected $errorBag = 'cart';
 
   public function authorize()
   {
@@ -20,7 +20,7 @@ class CartFormRequest extends BaseRequest
 
     $this->rules += [
       'qty' => 'nullable|numeric', // will be 1 if not sended
-      'product_id' => [ 'required', 'exists:products,id', new CheckProductStock()],
+      'product_seller_id' => ['required', 'exists:product_seller,id', new CheckProductStock()],
     ];
     return $this->rules;
   }

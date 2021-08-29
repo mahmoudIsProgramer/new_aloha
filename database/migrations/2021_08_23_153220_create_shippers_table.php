@@ -14,7 +14,8 @@ class CreateShippersTable extends Migration
   public function up()
   {
     Schema::create('shippers', function (Blueprint $table) {
-      $table->id();
+
+      $table->increments('id');
       $table->timestamps();
     });
   }

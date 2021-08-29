@@ -2,41 +2,39 @@
 
 namespace App\Traits\Models;
 
-use App\Models\Product;
 use App\Models\Promocode;
+use App\Models\ProductSeller;
 
 trait CartTrait
 {
 
   public function getCartProducts()
   {
-    return getCustomer()->products;
+    return getCustomer()->productSellers;
   }
 
   public function addProductToCart()
   {
 
-    $product = Product::find(request()->product_id);
+    $productSeller = ProductSeller::find(request()->product_seller_id);
+    $customer = getCustomer();
 
-    if ($product->inCart) {
+    if ($productSeller->inCart) {
 
-      getCustomer()->products()->syncWithoutDetaching([request()->product_id  => ['qty' => request('qty') ?? 1]]);
+      $customer->productSellers()->syncWithoutDetaching([request()->product_seller_id  => ['qty' => request('qty') ?? 1]]);
     } else {
 
-      getCustomer()->products()->attach([request()->product_id  => ['qty' => request('qty') ?? 1]]);
+      $customer->productSellers()->attach([request()->product_seller_id  => ['qty' => request('qty') ?? 1]]);
     }
 
-    $this->updatePromocodeDiscount();
+    // $this->updatePromocodeDiscount();
 
     return true;
   }
 
   public function removeProductFromCart()
   {
-
-    getCustomer()->products()->detach([request()->product_id]);
-
-    $this->updatePromocodeDiscount();
+    getCustomer()->productSellers()->detach(request()->product_seller_id);
 
     return true;
   }

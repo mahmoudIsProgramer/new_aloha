@@ -37,13 +37,13 @@ class AppServiceProvider extends ServiceProvider
       'site_options.minimum_order_option' => $siteOption->minimum_order_option,
       'site_options.copyRights' => $siteOption->copyRights,
     ]);
-    
+
     ############################## end site options  ##############################
 
     $socialMedia = DB::table('socail_media')->get();
-    // shown on sidebar 
+    // shown on sidebar
     $categoriesSidebar = Category::Active()->where('parent_id', null)->orWhere('parent_id', 0)->get();
-    // dd($categoriesSidebar); 
+    // dd($categoriesSidebar);
     // $categoriesSidebar = Category::Active()->whereHas('subcategories')->with(['subcategories' => function ($q) {
 
     //   $q->active()->whereHas('subsubcategories')->with(['subsubcategories' => function ($q) {
@@ -52,7 +52,7 @@ class AppServiceProvider extends ServiceProvider
     //   }]);
     // }])->get();
 
-    // shown on main menu 
+    // shown on main menu
     $categoriesMenu = Category::active()->menu()->limit(6)->get();
 
     View::share('socialMedia', $socialMedia);

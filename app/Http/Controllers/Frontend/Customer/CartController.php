@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Frontend\Customer;
 
-use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Traits\Models\CartTrait;
 use App\Http\Controllers\Controller;
@@ -15,12 +14,10 @@ class CartController extends Controller
 
   public function cart()
   {
-    $products = $this->getCartProducts();
-    // dd($products);
+    $productSellers = $this->getCartProducts();
+    // dd($productSellers);
 
-    $related = Product::latest()->limit(15)->get();
-
-    return view('customer.cart', compact('products', 'related'));
+    return view('frontend.customer.cart', compact('productSellers'));
   }
 
   public function addToCart(CartFormRequest $request)
@@ -30,7 +27,7 @@ class CartController extends Controller
     return redirect()->back()->withInput();
   } // end of update
 
-  public function removeFromCart(CartFormRequest $request)
+  public function removeFromCart(Request $request)
   {
     $this->removeProductFromCart();
     session()->flash('success', __('site.added_successfully'));

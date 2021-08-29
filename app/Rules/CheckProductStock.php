@@ -2,7 +2,7 @@
 
 namespace App\Rules;
 
-use App\Product;
+use App\Models\ProductSeller;
 use Illuminate\Contracts\Validation\Rule;
 
 class CheckProductStock implements Rule
@@ -13,10 +13,11 @@ class CheckProductStock implements Rule
    * @return void
    */
 
-  public $product = null;
+  public $productSeller = null;
   public function __construct()
   {
-    $this->product = Product::find(request('product_id'));
+    $this->productSeller = ProductSeller::find(request('product_seller_id'));
+    // dd($this->productSeller);
   }
 
   /**
@@ -29,7 +30,7 @@ class CheckProductStock implements Rule
   public function passes($attribute, $value)
   {
 
-    if (request('qty') && request('qty') > $this->product->stock) {
+    if (request('qty') && request('qty') > $this->productSeller->stock) {
       return false;
     }
 
@@ -44,6 +45,6 @@ class CheckProductStock implements Rule
 
   public function message()
   {
-    return __('This Product Out Of Stock Available is:') . $this->product->stock;
+    return __('Available is:') . $this->productSeller->stock;
   }
 }

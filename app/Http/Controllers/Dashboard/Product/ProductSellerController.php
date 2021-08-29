@@ -67,10 +67,10 @@ class ProductSellerController extends Controller
       return redirect()->back();
     }
 
-    $product->sellers()->find($seller->id)->delete();
+    $product->sellers()->detach($seller);
 
     session()->flash('success', __('site.deleted_successfully'));
-    return redirect()->bakc();
+    return redirect()->back();
     return redirect()->route('dashboard.products.sellers.index', ['product' => $product->id]);
   } // end of destroy
 

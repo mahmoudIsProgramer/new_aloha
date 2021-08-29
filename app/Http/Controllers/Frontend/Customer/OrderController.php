@@ -4,18 +4,14 @@ namespace App\Http\Controllers\Frontend\Customer;
 
 use App\Models\Delivery;
 use App\Traits\OrderTrait;
-use App\Traits\PaymentTrait;
-use Illuminate\Http\Request;
 use App\Traits\Models\CartTrait;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\FrontEnd\MakeOrderRequest;
 
 class OrderController extends Controller
 {
 
-  use  CartTrait, OrderTrait, PaymentTrait;
+  use  CartTrait, OrderTrait;
 
   public $request_data = [];
   public $customer = '';
@@ -44,7 +40,6 @@ class OrderController extends Controller
 
     # create order
     $order = $this->fillOrderDetails($request_data);
-
 
     // payOnline method
     if (request('payment_method') == 'payOnline') {

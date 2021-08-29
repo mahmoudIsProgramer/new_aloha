@@ -34,14 +34,5 @@ class CityTableSeeder extends Seeder
         'en' => ['name' => $key],
       ]);
     }
-
-    $models = ['Fesal' => 'فيصل', 'mounuib' => 'المنيب'];
-    foreach ($models as $key => $value) {
-      Regoin::create([
-        'state_id' => 1,
-        'ar' => ['name' => $value],
-        'en' => ['name' => $key],
-      ]);
-    }
   }
 }

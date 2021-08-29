@@ -72,7 +72,7 @@ class Kernel extends HttpKernel
     'localeCookieRedirect'    => \Mcamara\LaravelLocalization\Middleware\LocaleCookieRedirect::class,
     'localeViewPath'          => \Mcamara\LaravelLocalization\Middleware\LaravelLocalizationViewPath::class,
     'localization' => \App\Http\Middleware\localization::class, // api
-
+    'ConfirmProductHasAtLeastOneSeller' => \App\Http\Middleware\ConfirmProductHasAtLeastOneSeller::class,
 
   ];
 }

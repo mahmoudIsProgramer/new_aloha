@@ -111,7 +111,7 @@
                       class="btn btn-success btn-xs">@lang('site.specifications')
                   </a>
                   <a href="{{route('dashboard.products.sellers.index',$value->id)}}"
-                      class="btn btn-success btn-xs">@lang('site.sellers')
+                      class="btn btn-success btn-xs">@lang('site.sellers')[{{ $value->sellers->count() }}]
                   </a>
               </td>
               <td>{!! activeColumn($value->status) !!}</td>

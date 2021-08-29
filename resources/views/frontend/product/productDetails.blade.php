@@ -43,10 +43,11 @@ $page = 'productDetails';
                                     <div class="pro-group">
                                         <h2>{{ $product->title }}</h2>
                                         <ul class="pro-price">
-                                            <li>{{ $product->getTotalBySeller() }}</li>
+                                            <li>{{ $product->getTotal(request()->seller_id) }}</li>
                                             {{-- <li><span>mrp $140</span></li> --}}
-                                            {{-- <li>50% off</li> --}}
-                                            {!! $product->discount_percent !!}
+                                            @if ($per = $product->discountPercent(request()->seller_id) > 0)
+                                                <li>{{ $per }} % off</li>
+                                            @endif
                                         </ul>
                                         <div class="revieu-box">
                                             <ul>
@@ -62,7 +63,12 @@ $page = 'productDetails';
                                         </div>
                                     </div>
 
-                                    <form action="">
+                                    <form action="{{ route('customer.addToCart', ['product' => $product->id]) }}">
+                                        @csrf
+                                        @method('post')
+                                        <input type="hidden" name="product_seller_id" value="{{ $productSeller->id }}">
+                                        {{-- <input type="hidden" name="product_id" value="{{ $product->id }}">
+                                        <input type="hidden" name="seller_id" value="{{ $seller->id }}"> --}}
                                         <div id="selectSize"
                                             class="pro-group addeffect-section product-description border-product mb-0">
 
@@ -71,12 +77,17 @@ $page = 'productDetails';
                                                 @include('frontend.product.variations')
 
                                             </div>
+                                            <div class="features-box mb-4">
+                                                seller : {{ $seller->full_name }}
+                                            </div>
 
                                             <h6 class="product-title">quantity</h6>
                                             <div class="qty-box">
                                                 <div class="input-group">
                                                     <button type="button" class="qty-minus"></button>
-                                                    <input class="qty-adj form-control" type="number" value="1" />
+                                                    <input name="qty" type="number" min='1' max='{{ $productSeller->stock }}'
+                                                        class="qty-adj form-control"
+                                                        value="{{ old('qty', $product->qtyInCart($seller->id)) }}">
                                                     <button type="button" class="qty-plus"></button>
                                                 </div>
                                             </div>

@@ -14,7 +14,7 @@ class CreateProductSellerTable extends Migration
   public function up()
   {
     Schema::create('product_seller', function (Blueprint $table) {
-      $table->id();
+      $table->increments('id');
 
       $table->integer('stock')->nullable()->default(0);
       $table->string('status')->nullable()->default(0); // accept or reject this seller to sell this product

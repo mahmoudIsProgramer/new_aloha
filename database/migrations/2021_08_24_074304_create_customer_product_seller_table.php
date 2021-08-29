@@ -4,22 +4,27 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateCustomerProductTable extends Migration
+class CreateCustomerProductSellerTable extends Migration
 {
+
   /**
    * Run the migrations.
    *
    * @return void
    */
+
   public function up()
   {
-    Schema::create('customer_product', function (Blueprint $table) {
+    Schema::create('customer_product_seller', function (Blueprint $table) {
       $table->increments('id');
 
       $table->double('qty');
 
       $table->integer('customer_id')->unsigned()->nullable();
       $table->foreign('customer_id')->references('id')->on('customers')->onDelete('cascade');
+
+      $table->integer('product_seller_id')->unsigned()->nullable();
+      $table->foreign('product_seller_id')->references('id')->on('product_seller')->onDelete('cascade');
 
       $table->integer('product_id')->unsigned()->nullable();
       $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
@@ -38,6 +43,6 @@ class CreateCustomerProductTable extends Migration
    */
   public function down()
   {
-    Schema::dropIfExists('customer_product');
+    Schema::dropIfExists('customer_product_seller');
   }
 }

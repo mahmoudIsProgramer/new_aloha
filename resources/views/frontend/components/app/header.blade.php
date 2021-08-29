@@ -155,12 +155,10 @@
                                     </svg>
                                     <div class="item-count-contain inverce"> 1 </div>
                                 </li>
-                                <li class="mobile-cart
-                    item-count" onclick="openCart()">
+                                <li class="mobile-cart item-count" onclick="openCart()">
                                     <svg version="1.1" xmlns="http://www.w3.org/2000/svg"
                                         xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512"
-                                        style="enable-background:new 0 0 512
-                      512;" xml:space="preserve">
+                                        style="enable-background:new 0 0 512 512;" xml:space="preserve">
                                         <g>
                                             <g>
                                                 <path d="M443.209,442.24l-27.296-299.68c-0.736-8.256-7.648-14.56-15.936-14.56h-48V96c0-25.728-9.984-49.856-28.064-67.936

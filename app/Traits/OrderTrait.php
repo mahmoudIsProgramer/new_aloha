@@ -10,8 +10,6 @@ use Illuminate\Support\Facades\DB;
 trait OrderTrait
 {
 
-  use WalletTrait;
-
   public function orderData()
   {
 
@@ -94,29 +92,6 @@ trait OrderTrait
         'stock' => DB::raw('stock - ' . $product->pivot->qty),
       ]);
     }
-
-    return true;
-  }
-
-  public function generatePremium($order, $customer)
-  {
-    $months  = config('site_options.months') ?? 10;
-
-    $amount = $order->total / $months;
-
-    $arr = ['order_id' => $order->id, 'amount' => $amount];
-
-    $premuims  = [];
-    for ($i =  0; $i < 10; $i++) {
-      array_push($premuims, $arr);
-    }
-
-    $premiums = $customer->premiums()->createMany($premuims);
-
-    $this->updateWallet($customer, $order->total, 'withdraw', 'اضافة اقساط شهرية');
-    // $this->makeWalletHistory($customer, $order->total, 'withdraw','اضافة اقساط شهرية');
-
-    // dd($premuims);
 
     return true;
   }

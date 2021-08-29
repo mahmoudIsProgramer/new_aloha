@@ -14,12 +14,36 @@ class SellerTableSeeder extends Seeder
    */
   public function run()
   {
-    $customer = Seller::create([
-      'full_name' => "seller xyz",
+    $seller = Seller::create([
+      'full_name' => "seller one",
       'email' => "seller@g.com",
       'gender' => "male",
-      'company_name' => "xyz",
-      'state_id' => 1,
+      'company_name' => "one",
+      // 'state_id' => 1,
+      'password' => bcrypt('123456'),
+    ]);
+    $seller = Seller::create([
+      'full_name' => "seller two",
+      'email' => "seller@g.com",
+      'gender' => "male",
+      'company_name' => "two",
+      // 'state_id' => 1,
+      'password' => bcrypt('123456'),
+    ]);
+    $seller = Seller::create([
+      'full_name' => "seller three",
+      'email' => "seller@g.com",
+      'gender' => "male",
+      'company_name' => "three",
+      // 'state_id' => 1,
+      'password' => bcrypt('123456'),
+    ]);
+    $seller = Seller::create([
+      'full_name' => "seller four",
+      'email' => "seller@g.com",
+      'gender' => "male",
+      'company_name' => "four",
+      // 'state_id' => 1,
       'password' => bcrypt('123456'),
     ]);
   }

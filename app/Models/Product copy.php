@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Cohensive\Embed\Facades\Embed;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -12,13 +11,13 @@ class Product extends Model
 {
   use \Astrotomic\Translatable\Translatable;
 
-  // use SoftDeletes; //add this line
+  use SoftDeletes; //add this line
 
   protected $guarded = [];
   public $translatedAttributes = ['name', 'short_description', 'description', 'seo_key', 'seo_description'];
   protected $appends = ['image_path', 'total'];
 
-  ################################## start attributes ##################################
+  ////////////////////////////// start attributes ///////////////////////////////////
   public function getImagePathAttribute()
   {
     return asset('uploads/products/' . $this->image);
@@ -39,29 +38,29 @@ class Product extends Model
   public function getTotal($seller_id = null)
   {
     $seller = $this->selectedSeller(request()->seller_id ?? $seller_id);
-
     return $seller->pivot->selling_price - $seller->pivot->discount;
   } // end of image path attribute
 
   public function getDiscount($seller_id = null)
   {
 
-    $seller = $this->selectedSeller($seller_id);
+    $seller = $this->selectedSeller(request()->seller_id, $seller_id);
 
     return $seller->pivot->discount;
   } // end of image path attribute
 
-  public function discountPercent($seller_id = null)
+  public function getDiscountPercentAttribute($seller_id = null)
   {
-    $seller = $this->selectedSeller($seller_id);
+    $seller = $this->selectedSeller(request()->seller_id, $seller_id);
 
     $total  = $seller->pivot->selling_price - $seller->pivot->discount;
-    if ($total > 0) {
-      $per =  (1 - ($total /  $seller->pivot->selling_price)) * 100;
-      return number_format($per, 2);
+    if ($total != $seller->pivot->selling_price) {
+      return "<li>" .
+        (1 - ($total /  $seller->pivot->selling_price)) * 100   . " " . "%"
+        . __('site.Off') . "</li>";
     }
 
-    return false;
+    return true;
   } // end of image path attribute
 
   public function getTotalBladeAttribute()
@@ -95,35 +94,25 @@ class Product extends Model
     }
     return  $txt;
   } // end of image path attribute
-  public function listVariations()
-  {
-    $grouped_products = Product::whereIn('id', explode(',', $this->grouped_products))->get();
-    $variations = [];
-    foreach ($grouped_products as $product) {
-      $variations[$product->id] = $product->variations_blade;
-    }
-    return $variations;
-  } // end of image path attribute
 
   // get selected seller
   public function selectedSeller($seller_id = null)
   {
-    // dd($this->id);
     if ($seller_id) {
 
-      $seller =  $this->sellers()->find($seller_id);
+      return $this->sellers()->find($seller_id);
     } else {
-      // ->whereRaw('product_seller.product_id', $this->id)
-      $seller = $this->sellers()->orderByRaw('(product_seller.selling_price - product_seller.discount) asc')->first();
+
+      return $this->sellers()->orderByRaw('(product_seller.selling_price - product_seller.discount) asc')->first();
     }
-    // dd($seller);
-    return $seller;
   }
 
   public function getSalePriceBladeAttribute()
   {
     return   config('site_options.currency')  . ' ' . $this->selling_price;
   } // end of image path attribute
+
+
 
   public function getInStockAttribute()
   {
@@ -155,29 +144,23 @@ class Product extends Model
     return '';
   } // end of getIsFavoredAttribute
 
-  public function inCart()
+  public function getInCartAttribute()
   {
     if ($customer = getCustomer()) {
 
-      $db = DB::table('customer_product_seller')->where([
-        ['customer_id', request()->customer_id],
-        ['customer_id', request()->customer_id],
-        ['seller_id', request()->seller_id],
-      ])->first();
-
-      return $db ? true : false;
+      return $customer->products->where('id', $this->id)->count() > 0 ? true : false;
     } //end of if
 
     return false;
   } // end of getIsFavoredAttribute
 
-  public function qtyInCart($seller_id)
+  public function getQtyInCartAttribute()
   {
 
     $qty = 1;
-    if ($this->inCart($seller_id)) {
+    if ($this->inCart) {
 
-      $product  = getCustomer()->products->where('id', $this->id)->where('seller_id', $seller_id)->first();
+      $product  = getCustomer()->products->where('id', $this->id)->first();
 
       $qty = $product->pivot->qty;
     }
@@ -185,28 +168,28 @@ class Product extends Model
     return $qty;
   } // end of image path attribute
 
-  public function productTotalInCart($seller_id)
+  public function getTotalCartAttribute($noOffer = false)
   {
 
     $total = 0;
 
-    if ($this->inCart($seller_id)) {
+    if ($this->inCart) {
 
-      $product  = getCustomer()->products->where('id', $this->id)->where('seller_id', $seller_id)->first();
+      $product  = getCustomer()->products->where('id', $this->id)->first();
 
-      $total = $product->pivot->qty * $this->getTotal($seller_id);
+      $total = $product->pivot->qty * $this->total;
     }
 
     return $total;
   } // end of image path attribute
 
-  public function getInCartClassAttribute($seller_id)
+  public function getInCartClassAttribute()
   {
-    return  $this->inCart($seller_id) ? 'red_icon_cart' : '';
+    return  $this->inCart ? 'red_icon_cart' : '';
   } // end of getIsFavoredAttribute
-  public function getCartTextAttribute($seller_id)
+  public function getCartTextAttribute()
   {
-    return  $this->inCart($seller_id) ?  __('site.Remove From Cart') :  __('site.Add To Cart');
+    return  $this->inCart ?  __('site.Remove From Cart') :  __('site.Add To Cart');
   } // end of getIsFavoredAttribute
   public function getFavoiredTextAttribute()
   {
@@ -242,7 +225,8 @@ class Product extends Model
     $embed->setAttribute(['width' => 800]);
     return $embed->getHtml();
   }
-  ################################## end attributes ##################################
+
+  // //////////////////////////// end  attributes ///////////////////////////////////
   public function  productHasOffer()
   {
 
@@ -273,24 +257,18 @@ class Product extends Model
   }
 
   ######################### start relationships    ##########################
-  // public function customers()
-  // {
-  //   return $this->belongsToMany(Customer::class, 'customer_product_seller', 'customer_id', 'product_id')->withPivot(['qty']);
-  // }
+  public function customers()
+  {
+    return $this->belongsToMany(Customer::class, 'customer_product_seller', 'customer_id', 'product_id')->withPivot(['qty']);
+  }
 
   public function sellers()
   {
-    return $this->belongsToMany(Seller::class, 'product_seller', 'product_id', 'seller_id')->withPivot([
-      'id', 'stock', 'selling_price', 'discount', 'sku', 'seller_notes', 'status'
-
+    return $this->belongsToMany(Seller::class, 'product_seller', 'seller_id', 'product_id')->withPivot([
+      'stock', 'selling_price', 'discount', 'sku', 'seller_notes', 'status',
       // 'importance',
     ]);
   }
-
-  public function productSeller()
-  {
-    return $this->hasMany(ProductSeller::class);
-  } // end of user
 
   public function quantity()
   {
@@ -332,6 +310,11 @@ class Product extends Model
   public function orders()
   {
     return $this->belongsToMany(Order::class, 'order_product', 'order_id', 'product_id')->withPivot('qty', 'price', 'price_before_discount', 'total', 'status');
+  } // end of parameters
+
+  public function requestPricerOders()
+  {
+    return $this->belongsToMany(RequestPriceOrder::class, 'request_price_order_products', 'request_price_orders_id', 'product_id')->withPivot('qty', 'color', 'price', 'total');
   } // end of parameters
 
   public function variations()
@@ -432,6 +415,11 @@ class Product extends Model
   public function scopeHotDeal($query)
   {
     return $query->where('hot_deal', 1);
+  }
+
+  public function scopeOff50($query)
+  {
+    return $query->where('discount_percent', 50);
   }
 
   public function scopeWhenSearch($query, $search)
