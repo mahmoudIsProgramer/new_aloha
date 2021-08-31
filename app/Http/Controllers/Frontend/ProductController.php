@@ -11,6 +11,7 @@ use App\Http\Controllers\Controller;
 class ProductController extends Controller
 {
 
+
   public function productDetails(Request $request, Product $product)
   {
 
@@ -20,7 +21,9 @@ class ProductController extends Controller
       'reviews' => function ($q) {
         return $q->Active()->get();
       },
-      // 'productSellers'
+      'productSellers' => function ($qq) {
+        return $qq->orderBy('selling_price');
+      }
     ]);
 
     $seller = $product->selectedSeller(request('seller_id'));
@@ -32,6 +35,15 @@ class ProductController extends Controller
     $relatedProducts = Product::where('id', '!=', $product->id)->where('category_id', $product->category_id)->limit(3)->get();
 
     return view('frontend.product.productDetails', compact('product', 'relatedProducts', 'seller', 'productSeller'));
+  } //end of index
+
+  public function otherSellers(Request $request, Product $product)
+  {
+
+    $productSellers = $product->productSellers()->orderBy('selling_price', 'asc')->get();
+
+    
+    return view('frontend.product.otherSellers', compact('product',  'productSellers'));
   } //end of index
 
   public function  products(Request $request)

@@ -103,6 +103,8 @@ Route::group(['namespace' => "Frontend"], function () {
 
   Route::get('products', 'ProductController@products')->name('products');
 
+  Route::get('otherSellers/{product}', 'ProductController@otherSellers')->name('otherSellers');
+
   Route::get('/blogs', 'HomeController@blogs')->name('blogs');
 
   Route::get('/blogDetails/{blogs}', 'HomeController@blogDetails')->name('blogDetails');

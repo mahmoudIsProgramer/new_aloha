@@ -12,8 +12,6 @@ class Product extends Model
 {
   use \Astrotomic\Translatable\Translatable;
 
-  // use SoftDeletes; //add this line
-
   protected $guarded = [];
   public $translatedAttributes = ['name', 'short_description', 'description', 'seo_key', 'seo_description'];
   protected $appends = ['image_path', 'total'];
@@ -24,45 +22,8 @@ class Product extends Model
     return asset('uploads/products/' . $this->image);
   } // end of image path attribute
 
-  public function getTotalAttribute()
-  {
-    $price = $this->selling_price;
 
-    #if have discount
-    if ($this->discount != 0) {
-      $price = $this->selling_price - $this->discount;
-    }
 
-    return $price;
-  } // end of image path attribute
-
-  public function getTotal($seller_id = null)
-  {
-    $seller = $this->selectedSeller(request()->seller_id ?? $seller_id);
-
-    return $seller->pivot->selling_price - $seller->pivot->discount;
-  } // end of image path attribute
-
-  public function getDiscount($seller_id = null)
-  {
-
-    $seller = $this->selectedSeller($seller_id);
-
-    return $seller->pivot->discount;
-  } // end of image path attribute
-
-  public function discountPercent($seller_id = null)
-  {
-    $seller = $this->selectedSeller($seller_id);
-
-    $total  = $seller->pivot->selling_price - $seller->pivot->discount;
-    if ($total > 0) {
-      $per =  (1 - ($total /  $seller->pivot->selling_price)) * 100;
-      return number_format($per, 2);
-    }
-
-    return false;
-  } // end of image path attribute
 
   public function getTotalBladeAttribute()
   {
@@ -200,7 +161,7 @@ class Product extends Model
     } //end of if
 
     return false;
-  } // end of getIsFavoredAttribute
+  } // end of
 
   public function getIsFavoiredClassAttribute()
   {
@@ -210,61 +171,17 @@ class Product extends Model
     } //end of if
 
     return '';
-  } // end of getIsFavoredAttribute
+  } // end of
 
-
-  public function getInCartClassAttribute($seller_id)
+  public function getIsNewAttribute($query)
   {
-    return  $this->inCart($seller_id) ? 'red_icon_cart' : '';
-  } // end of getIsFavoredAttribute
-  public function getCartTextAttribute($seller_id)
-  {
-    return  $this->inCart($seller_id) ?  __('site.Remove From Cart') :  __('site.Add To Cart');
-  } // end of getIsFavoredAttribute
-  public function getFavoiredTextAttribute()
-  {
-    return  $this->isFavoired ? __('site.Remove From Favoirtes') : __('site.Add To Favoirtes');
-  } // end of getIsFavoredAttribute
-
-  public function getVideoHtmlAttribute()
-  {
-    $embed = Embed::make($this->video)->parseUrl();
-
-    if (!$embed)
-      return '';
-
-    $embed->setAttribute(['width' => 800]);
-    return $embed->getHtml();
+    Carbon::parse($this->created_at)->addMonth()->isPast() ? true : false;
   }
+
+
+
   ################################## end attributes ##################################
-  public function  productHasOffer()
-  {
 
-    if ($this->checkIfHasOffer() || $this->discount > 0 || $this->hot_deal == 1) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  public function checkIfHasOffer()
-  {
-    $offer = Offer::when($this->category_id, function ($q) {
-      // \Log::info('cat'.$this->category_id);
-
-      return $q->where('category_id', $this->category_id);
-    })->when($this->subcategory_id != null, function ($q) {
-      // \Log::info('sub'.$this->subcategory_id);
-
-      return $q->orWhere('subcategory_id', $this->subcategory_id);
-    })->when($this->brand_id != null, function ($q) {
-      // \Log::info('brand'.$this->brand_id);
-
-      return $q->orWhere('brand_id', $this->brand_id);
-    })->first();
-
-    return $offer;
-  }
 
   ######################### start relationships    ##########################
   // public function customers()
@@ -392,20 +309,12 @@ class Product extends Model
     return $query->where('on_sale', 1);
   }
 
-  public function scopeIsCompo($query)
-  {
-    return $query->where('is_compo', 1);
-  }
-
   public function scopeTrending($query)
   {
     return $query->where('trending', 1);
   }
 
-  public function getIsNewAttribute($query)
-  {
-    Carbon::parse($this->created_at)->addMonth()->isPast() ? true : false;
-  }
+
 
   public function scopeFeatured($query)
   {
@@ -419,7 +328,6 @@ class Product extends Model
 
   public function scopeBestSeller($query)
   {
-    //return $query->orderBy('count_solid','desc');
     return $query->where('best_seller', 1);
   }
 
@@ -472,14 +380,6 @@ class Product extends Model
   public function scopeWhenColor($query, $color_id)
   {
     return $query->where('color_id', $color_id);
-    // dd($color_id);
-    // return $query->when($color_id, function ($q) use ($color_id) {
-
-    //   return $q->whereHas('color', function ($qu) use ($color_id) {
-
-    //     return $qu->where('color_id', $color_id);
-    //   });
-    // });
   }
 
   public function scopeWhenSize($query, $size_id)
@@ -508,4 +408,24 @@ class Product extends Model
   } // end of
 
   ////////////////////////////////   start scopes //////////////////////////////
+
+  public function startFrom()
+  {
+    $productSeller = $this->productSellers()->orderBy('selling_price', 'asc')->first();
+    return $productSeller->selling_price - $productSeller->discount;
+  }
+
+  // public function discountPercent($seller_id = null)
+  // {
+  //   $seller = $this->selectedSeller($seller_id);
+
+  //   $total  = $seller->pivot->selling_price - $seller->pivot->discount;
+  //   if ($total > 0) {
+  //     $per =  (1 - ($total /  $seller->pivot->selling_price)) * 100;
+  //     return number_format($per, 2);
+  //   }
+
+  //   return false;
+  // } // end of image path attribute
+
 }//end of model

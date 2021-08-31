@@ -32,7 +32,8 @@ $page = 'productDetails';
                                     <div class="col-12 p-0">
                                         <div class="slider-nav">
                                             @foreach ($product->productImages as $img)
-                                                <div><img src="{{ $img->image_path }}" alt="" class="img-fluid"></div>
+                                                <div><img src="{{ $img->image_path }}" alt="" class="img-fluid">
+                                                </div>
                                             @endforeach
                                         </div>
                                     </div>
@@ -43,10 +44,10 @@ $page = 'productDetails';
                                     <div class="pro-group">
                                         <h2>{{ $product->title }}</h2>
                                         <ul class="pro-price">
-                                            <li>{{ $product->getTotal(request()->seller_id) }}</li>
+                                            <li>{{ $productSeller->total }}</li>
                                             {{-- <li><span>mrp $140</span></li> --}}
-                                            @if ($per = $product->discountPercent(request()->seller_id) > 0)
-                                                <li>{{ $per }} % off</li>
+                                            @if ( $productSeller->discountPercent > 0)
+                                                <li>{{ $productSeller->discountPercent }} % off</li>
                                             @endif
                                         </ul>
                                         <div class="revieu-box">
@@ -85,9 +86,9 @@ $page = 'productDetails';
                                             <div class="qty-box">
                                                 <div class="input-group">
                                                     <button type="button" class="qty-minus"></button>
-                                                    <input name="qty" type="number" min='1' max='{{ $productSeller->stock }}'
-                                                        class="qty-adj form-control"
-                                                        value="{{ old('qty', $productSeller->qtyInCart ) }}">
+                                                    <input name="qty" type="number" min='1'
+                                                        max='{{ $productSeller->stock }}' class="qty-adj form-control"
+                                                        value="{{ old('qty', $productSeller->qtyInCart) }}">
                                                     <button type="button" class="qty-plus"></button>
                                                 </div>
                                             </div>
@@ -106,9 +107,10 @@ $page = 'productDetails';
                                         </div>
                                     </form>
 
-                                    <div class="pro-group">
+                                    {{-- <div class="pro-group">
                                         <div class="product-offer">
-                                            <h6 class="product-title"><i class="fa fa-tags"></i>5 offers Available </h6>
+                                            <h6 class="product-title"><i class="fa fa-tags"></i>5 offers Available
+                                            </h6>
                                             <div class="offer-contain">
                                                 <ul>
                                                     <li>
@@ -120,11 +122,18 @@ $page = 'productDetails';
                                                 </ul>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> --}}
                                     <div class="pro-group">
                                         <h6 class="product-title">product infomation</h6>
                                         <p>{{ $product->short_description }}</p>
                                     </div>
+
+                                    @if($product->productSellers->count())
+                                    <p class="other_prodss">Other Seller:
+                                      <br> <a href="{{ route('otherSellers', ['product'=>$product->id]) }}">({{  $product->productSellers->count()  }}) More offers Starting from {{ $product->startFrom() }}</a>
+                                    </p>
+                                    @endif
+
 
                                 </div>
                             </div>
