@@ -86,7 +86,7 @@ $page = 'Cart';
             <div class="row cart-buttons">
                 <div class="col-12">
                     <a href="{{ route('products') }}" class="btn btn-normal">continue shopping</a>
-                    <a href="{{ route('customer.checkout', ['id' => 1]) }}" class="btn btn-normal ms-3">check out</a>
+                    <a href="{{ route('customer.checkout') }}" class="btn btn-normal ms-3">check out</a>
                 </div>
             </div>
         </div>

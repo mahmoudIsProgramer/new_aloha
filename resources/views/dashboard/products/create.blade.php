@@ -66,7 +66,7 @@ $title = trans('site.products');
             });
 
             @if (old('category_id'))
-            
+
                 @php
                     $category_id = old('category_id');
                     $subcategory_id = old('subcategory_id');
@@ -86,7 +86,7 @@ $title = trans('site.products');
 
 
             @if (old('subcategory_id'))
-            
+
                 @php
                     $subcategory_id = old('subcategory_id');
                     $subsubcategory_id = old('subsubcategory_id');
@@ -104,26 +104,6 @@ $title = trans('site.products');
 
         });
 
-
-        // append price and expire date
-        $(".hot_deal").change(function() {
-            $html = `
-                        <label >@lang('site.hot_deal_price')</label>
-                        <input type="text" name ='hot_deal_price'  value="{{ old('hot_deal_price') }}" class="form-control" id="hot_deal_price" required  >
-
-                        <label >@lang('site.expire_hot_deal_date')</label>
-                        <input type="date" name ='expire_hot_deal_date'  value="{{ old('expire_hot_deal_date') }}" class="form-control" id="expire_hot_deal_date" required>
-
-                        <label >@lang('site.expire_hot_deal_time')</label>
-                        <input type="time" name ='expire_hot_deal_time'  value="{{ old('expire_hot_deal_time') }}" class="form-control" id="expire_hot_deal_time" required>
-
-                        `;
-            if (this.value == '1') {
-                $('.hot_deal_data').html($html);
-            } else {
-                $('.hot_deal_data').empty();
-            }
-        });
     </script>
 
 @endpush

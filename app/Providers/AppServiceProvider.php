@@ -31,8 +31,6 @@ class AppServiceProvider extends ServiceProvider
     $siteOption = SiteOption::first();
 
     config([
-      'site_options.currency' => __('site.' . $siteOption->currency),
-      'site_options.delivery_fees' => $siteOption->delivery_fees,
       'site_options.minimum_order_to_apply_promocode' => $siteOption->minimum_order_to_apply_promocode,
       'site_options.minimum_order_option' => $siteOption->minimum_order_option,
       'site_options.copyRights' => $siteOption->copyRights,

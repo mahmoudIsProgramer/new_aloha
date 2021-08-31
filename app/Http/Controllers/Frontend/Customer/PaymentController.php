@@ -2,14 +2,12 @@
 
 namespace App\Http\Controllers\Frontend\Customer;
 
-use App\Traits\PaymentTrait;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Request;
 
 class PaymentController extends Controller
 {
 
-  use PaymentTrait;
 
   public function callback_response(Request $request)
   {

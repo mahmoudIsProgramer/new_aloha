@@ -29,7 +29,7 @@ class Seller extends  Authenticatable
     ]);
   }
 
-  public function productSeller()
+  public function productSellers()
   {
     return $this->hasMany(ProductSeller::class);
   } // end of user

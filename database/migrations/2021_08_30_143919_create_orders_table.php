@@ -14,11 +14,12 @@ class CreateOrdersTable extends Migration
       $table->increments('id');
 
       $table->integer('subtotal')->nullable();
+      $table->double('commision')->nullable();
       $table->integer('total')->nullable();
       $table->string('device_type')->nullable(); // web , android , ios
       $table->string('status')->default('pendding'); // waitPayment ,  pendding,inShipment,onDelivery,completed,canceled , returned
 
-      $table->string('shipping_number')->nullable(); // Shipping number
+      $table->integer('shipping_id')->nullable(); // Shipping number
       $table->string('order_notes')->nullable();
 
       $table->string('payment_method')->default(0); // cacheOnDelivery or payOnline,
@@ -32,9 +33,6 @@ class CreateOrdersTable extends Migration
 
       $table->integer('customer_id')->unsigned()->nullable();
       $table->foreign('customer_id')->references('id')->on('customers')->onDelete('cascade');
-
-      $table->integer('city_id')->unsigned()->nullable();
-      $table->foreign('city_id')->references('id')->on('cities')->onDelete('cascade');
 
       $table->integer('address_id')->unsigned()->nullable();
       $table->foreign('address_id')->references('id')->on('addresses')->onDelete('cascade');

@@ -11,7 +11,6 @@ class CustomerFormRequest extends FormRequest
   protected $errorBag = 'register';
 
   public $rules = [
-
     'full_name' => 'required|string|max:255',
     'phone' => 'required|string|max:255',
   ];

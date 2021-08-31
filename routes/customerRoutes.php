@@ -25,6 +25,9 @@ Route::group(['prefix'  =>  'customer',  'as' => 'customer.', 'namespace' => "Fr
 # must customer
 Route::group(['prefix' => 'customer', 'as' => 'customer.', 'namespace' => "Frontend\Customer", 'middleware' => ['auth:customer']], function () {
 
+
+  Route::resource('addresses', 'AddressController')->except(['show']);
+
   #start profile
   Route::get('profile', 'ProfileController@profile')->name('profile');
 
@@ -113,6 +116,7 @@ Route::group(['namespace' => "Frontend"], function () {
   Route::get('getStates', 'PublicController@getStates')->name('getStates');
 
   // Route::get('mob_ifram/{session_id}', 'HomeController@mob_ifram')->name('mob_ifram');
+
 
   Route::get('customer/forget_password', 'Customer\PasswordResetController@forget_password')->name('customer.forget_password');
   Route::post('customer/send_reset_password', 'Customer\PasswordResetController@send_reset_password')->name('customer.send_reset_password');

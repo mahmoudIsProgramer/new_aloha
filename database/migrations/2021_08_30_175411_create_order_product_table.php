@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateOrderProductTable extends Migration
+class CreateOrderProductSellerTable extends Migration
 {
   /**
    * Run the migrations.
@@ -14,23 +14,20 @@ class CreateOrderProductTable extends Migration
 
   public function up()
   {
-    Schema::create('order_product', function (Blueprint $table) {
+    Schema::create('order_product_seller', function (Blueprint $table) {
 
       $table->increments('id');
 
       $table->integer('qty')->nullable();
-      $table->text('color')->nullable();
-      $table->integer('total')->nullable();
       $table->integer('price')->nullable();
       $table->integer('price_before_discount')->nullable();
-      $table->double('promocode_discount')->nullable(); // per product
-      $table->double('taxes')->nullable(); // per product
+      $table->integer('total')->nullable();  // price * qty
       $table->string('status')->default('solid'); // solid,  returned
 
-      // $table->integer('owner_percent')->nullable();
+      $table->double('commision')->nullable(); // per product
 
-      $table->integer('product_id')->unsigned()->nullable();
-      $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
+      $table->integer('product_seller_id')->unsigned()->nullable(); // by this id will get seller  , and product info
+      $table->foreign('product_seller_id')->references('id')->on('product_seller')->onDelete('cascade');
 
       $table->integer('order_id')->unsigned()->nullable();
       $table->foreign('order_id')->references('id')->on('orders')->onDelete('cascade');
@@ -46,6 +43,6 @@ class CreateOrderProductTable extends Migration
    */
   public function down()
   {
-    Schema::dropIfExists('order_product');
+    Schema::dropIfExists('order_product_seller');
   }
 }

@@ -2,108 +2,114 @@
 
 namespace App\Traits;
 
-use App\Delivery;
-use App\Promocode;
-use App\WalletHistory;
+use App\Models\Tax;
+use App\Models\Seller;
+use App\Models\Delivery;
+use App\Models\Promocode;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 trait OrderTrait
 {
-
-  public function orderData()
+  public function orderData($customer)
   {
+    $request_data = request()->except(['']);
 
-    $subtotal = 0;
+    $subtotal = $customer->totalCart;
 
-    $subtotal = $this->customer->totalCart;
+    $taxes = $this->getTaxes($subtotal);
 
-    $this->request_data['subtotal'] = $subtotal;
+    $delivery_fees = $this->delivery_fees();
 
-    $this->request_data['order_type'] = "normal_order";
+    // if (request('code')) {
+    //   $request_data = $this->getPromocodeValue($request_data, $subtotal);
+    // }
 
-    $this->request_data['taxes'] =  getTaxes($subtotal);
+    $request_data['delivery_fees'] = $delivery_fees;
+    $request_data['taxes'] = $taxes;
+    $request_data['subtotal'] = $subtotal;
+    $request_data['device_type'] = $subtotal;
 
-    $this->delivery_fees();
+    // $promocode_value = $request_data['promocode_value'] ?? 0;
 
-    if (request('code')) {
-      $this->getPromocodeValue($subtotal);
-    }
+    $request_data['total'] = $subtotal + $taxes + $delivery_fees;
+    // $request_data['commission'] =  $request_data['total'] * commission();
 
-    $this->request_data['total'] = $this->request_data['subtotal'] + ($this->request_data['taxes'] ?? 0) + ($this->request_data['delivery_fees'] ?? 0)  - ($this->request_data['promocode_value'] ?? 0);
-
-    return  true;
+    return  $request_data;
   } //end of update
 
-  public function fillOrderDetails()
+  public function makeOrder($request_data, $customer)
   {
-    $order = $this->customer->orders()->create($this->request_data);
 
-    $this->generateOrderProducts($order);
+    $order = $customer->orders()->create($request_data);
 
-    // start payment status and wallet operations
-    if (request('payment_method') == 'wallet') {
+    $this->generateOrderProducts($customer, $order); // for admin
 
-      $this->updateWallet($this->customer, $order->total, 'withdraw', 'اتمام طلب');
-      // $this->makeWalletOrder($order, $this->customer);
+    $this->generateSubordersProducts($order); // for sellers
 
-      $order->update(['payment_status' => 1]);
-    } // end payment status and wallet operations
+    // $this->removeCart();
 
-    // start payment status and wallet operations
-    if (request('payment_method') == 'premium') {
-
-      $this->generatePremium($order, $this->customer);
-
-      $order->update(['payment_status' => 0]);
-    } // end payment status and wallet operations
-
-    // start payment status and wallet operations
-    if (request('payment_method') != 'payOnline') {
-
-      $this->removeCart();
-    } // end payment status and wallet operations
-
-    // start  send confirm email
-    if (request('customer_email') || $this->customer->email) {
-
-      $this->confirmationMail($order, $this->customer);
-    } // end send confirm email
-
-    return $order;
+    return true;
   }
 
-  public function generateOrderProducts($order)
+  public function generateOrderProducts($customer, $order)
   {
 
-    foreach ($this->customer->products as $product) {
+    foreach ($customer->productSellers as $productSeller) {
 
-      $total = $product->pivot->qty * $product->total;
+      $total = $productSeller->qtyInCart * $productSeller->total;
 
-      $order->products()->attach($product->id, [
-        'price' => $product->total,
-        'qty' => $product->pivot->qty,
+      $order->productSellers()->attach($productSeller->id, [
+        'price' => $productSeller->total,
+        'qty' => $productSeller->qtyInCart,
         'total' => $total,
-        'price_before_discount' => $product->sale_price,
-        'product_id' => $product->id,
       ]);
 
-      $product->update([
-        'count_solid' => DB::raw('count_solid + ' . $product->pivot->qty),
-        'stock' => DB::raw('stock - ' . $product->pivot->qty),
+      $productSeller->update([
+        'stock' => DB::raw('stock - ' . $productSeller->qtyInCart),
       ]);
     }
 
     return true;
   }
 
+  public function generateSubordersProducts($order)
+  {
+    $orderItems = $order->productSellers;
+
+    foreach ($orderItems->groupBy('seller_id') as $seller_id => $productSellers) {
+
+
+      $total = $productSellers->sum('pivot.total');
+      $suborder = $order->subOrders()->create([
+        'seller_id' => $seller_id,
+        'total' => $total,
+      ]);
+
+      foreach ($productSellers as $productSeller) {
+
+        // $total = $productSeller->pivot->qty * $productSeller->pivot->total;
+
+        $suborder->productSellers()->attach($productSeller->id, [
+          'price' => $productSeller->pivot->price,
+          'qty' => $productSeller->pivot->qty,
+          'total' =>  $productSeller->pivot->total,
+          // 'product_seller_id' => $productSeller->id,
+          // 'sub_transaction_id' => $this->id,
+        ]);
+
+        // dd($suborder);
+      }
+
+      // dd($suborder);
+
+    }
+  }
+
   public function delivery_fees()
   {
-    if (config('site_options.applay_package') == 1) {
-      if (has_permission($this->customer, 'free_delivery')) {
-        return 0;
-      }
-    }
 
+    return 0;
     $delivery = Delivery::where('city_id', request()->city_id)->first();
 
     $this->request_data['delivery_fees'] = $delivery->price;
@@ -169,4 +175,17 @@ trait OrderTrait
     return true;
   } //end fo category
 
+  public function getTaxes($subtotal)
+  {
+
+    $values_amount = Tax::Active()->where('type', 'value')->sum('value') ?? 0;
+    $percents = Tax::Active()->where('type', 'percent')->get();
+    $percent_amount = 0;
+
+    foreach ($percents as $key => $value) {
+      $percent_amount = $percent_amount + ($subtotal * $value->value * 0.01);
+    }
+
+    return $values_amount + $percent_amount;
+  }
 }

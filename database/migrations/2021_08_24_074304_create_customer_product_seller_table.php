@@ -26,11 +26,11 @@ class CreateCustomerProductSellerTable extends Migration
       $table->integer('product_seller_id')->unsigned()->nullable();
       $table->foreign('product_seller_id')->references('id')->on('product_seller')->onDelete('cascade');
 
-      $table->integer('product_id')->unsigned()->nullable();
-      $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
+      // $table->integer('product_id')->unsigned()->nullable();
+      // $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
 
-      $table->integer('seller_id')->unsigned()->nullable();
-      $table->foreign('seller_id')->references('id')->on('sellers')->onDelete('cascade');
+      // $table->integer('seller_id')->unsigned()->nullable();
+      // $table->foreign('seller_id')->references('id')->on('sellers')->onDelete('cascade');
 
       $table->timestamps();
     });

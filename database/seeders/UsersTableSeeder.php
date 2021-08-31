@@ -28,7 +28,7 @@ class UsersTableSeeder extends Seeder
 
     $user->attachRole('super_admin');
 
-    #super_admin mgh
+    #super_admin aloha
     $user = User::create([
       'first_name' => 'super',
       'last_name' => 'admin',

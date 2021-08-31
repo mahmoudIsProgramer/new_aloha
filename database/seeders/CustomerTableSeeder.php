@@ -23,15 +23,5 @@ class CustomerTableSeeder extends Seeder
       'password' => bcrypt('123456'),
     ]);
 
-    // Cart::create(['customer_id'=>$customer->id]);
-
-    // $customer = Customer::create([
-    //     'full_name'=>"m1" ,
-    //     'email'=>"m1@m.com",
-    //     'gender'=>"male",
-    //     'password'=>bcrypt('123456'),
-    // ]);
-    // Cart::create(['customer_id'=>$customer->id]);
-
   }
 }

@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -11,6 +10,8 @@ class ProductSeller extends Model
   use HasFactory;
 
   protected $table = 'product_seller';
+
+  protected $guarded = [];
 
   protected $appends = ['total'];
 
@@ -36,7 +37,19 @@ class ProductSeller extends Model
   {
     return $this->belongsToMany(Customer::class, 'customer_product_seller', 'customer_id', 'product_seller_id')->withPivot(['qty']);
   }
+
+  public function orders()
+  {
+    return $this->belongsToMany(Order::class, 'order_product_seller', 'order_id', 'product_seller_id')->withPivot('qty', 'price', 'price_before_discount', 'total', 'status');
+  }
+
+  public function suborders()
+  {
+    return $this->belongsToMany(Suborder::class, 'suborder_product_seller', 'suborder_id', 'product_seller_id')->withPivot('qty', 'price', 'total', 'status');
+  }
+
   ########################### end relations ######################################
+
   ########################### start attributes ######################################
   public function getInCartAttribute()
   {
@@ -47,7 +60,7 @@ class ProductSeller extends Model
     } //end of if
 
     return false;
-  } // end of getIsFavoredAttribute
+  } // end of
 
   public function getQtyInCartAttribute()
   {
@@ -64,12 +77,8 @@ class ProductSeller extends Model
 
   public function getProductTotalInCartAttribute()
   {
-
-    // Log::info($this->qty_in_cart);
-    // Log::info($this->in_cart);
-    // Log::info($this->total);
     if ($this->inCart) {
-      $total = $this->qty_in_cart * $this->total;
+      $total = $this->qtyInCart * $this->total;
     }
 
     return $total ?? 0;

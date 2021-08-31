@@ -108,17 +108,74 @@ class Product extends Model
   // get selected seller
   public function selectedSeller($seller_id = null)
   {
-    // dd($this->id);
     if ($seller_id) {
 
       $seller =  $this->sellers()->find($seller_id);
     } else {
-      // ->whereRaw('product_seller.product_id', $this->id)
       $seller = $this->sellers()->orderByRaw('(product_seller.selling_price - product_seller.discount) asc')->first();
     }
-    // dd($seller);
     return $seller;
   }
+
+  // get selected seller
+  public function selectedProductSeller($seller_id = null)
+  {
+    $seller = $this->selectedSeller($seller_id);
+
+    $productSeller = ProductSeller::where('product_id', $this->id)->where('seller_id', $seller->id)->first();
+    return $productSeller;
+  }
+
+  // public function getInCartAttribute()
+  // {
+
+  //   $productSeller = $this->selectedProductSeller(request('seller_id'));
+
+  //   if ($customer = getCustomer()) {
+
+  //     $db = DB::table('customer_product_seller')->where([
+  //       ['customer_id', $customer->id],
+  //       ['product_seller_id', $productSeller->id],
+  //     ])->first();
+
+  //     return $db ? true : false;
+  //   } //end of if
+
+  //   return false;
+  // } // end of getIsFavoredAttribute
+
+  // public function qtyInCart()
+  // {
+
+  //   $productSeller = $this->selectedProductSeller(request('seller_id'));
+  //   dd($productSeller);
+  //   if ($this->inCart) {
+
+  //     dd($this->inCart);
+  //     // $product  = getCustomer()->products->where('id', $this->id)->where('seller_id', $seller_id)->first();
+  //     // $product  = getCustomer()->products->where('id', $this->id)->where('seller_id', $seller_id)->first();
+
+  //     $qty = $productSeller->qty;
+  //   }
+
+  //   return $qty ?? 1;
+  // } // end of image path attribute
+
+  // public function productTotalInCart($seller_id)
+  // {
+
+  //   $total = 0;
+
+  //   if ($this->inCart) {
+
+  //     $product  = getCustomer()->products->where('id', $this->id)->where('seller_id', $seller_id)->first();
+
+  //     $total = $product->pivot->qty * $this->getTotal($seller_id);
+  //   }
+
+  //   return $total;
+  // } // end of image path attribute
+
 
   public function getSalePriceBladeAttribute()
   {
@@ -155,50 +212,6 @@ class Product extends Model
     return '';
   } // end of getIsFavoredAttribute
 
-  public function inCart()
-  {
-    if ($customer = getCustomer()) {
-
-      $db = DB::table('customer_product_seller')->where([
-        ['customer_id', request()->customer_id],
-        ['customer_id', request()->customer_id],
-        ['seller_id', request()->seller_id],
-      ])->first();
-
-      return $db ? true : false;
-    } //end of if
-
-    return false;
-  } // end of getIsFavoredAttribute
-
-  public function qtyInCart($seller_id)
-  {
-
-    $qty = 1;
-    if ($this->inCart($seller_id)) {
-
-      $product  = getCustomer()->products->where('id', $this->id)->where('seller_id', $seller_id)->first();
-
-      $qty = $product->pivot->qty;
-    }
-
-    return $qty;
-  } // end of image path attribute
-
-  public function productTotalInCart($seller_id)
-  {
-
-    $total = 0;
-
-    if ($this->inCart($seller_id)) {
-
-      $product  = getCustomer()->products->where('id', $this->id)->where('seller_id', $seller_id)->first();
-
-      $total = $product->pivot->qty * $this->getTotal($seller_id);
-    }
-
-    return $total;
-  } // end of image path attribute
 
   public function getInCartClassAttribute($seller_id)
   {
@@ -212,25 +225,6 @@ class Product extends Model
   {
     return  $this->isFavoired ? __('site.Remove From Favoirtes') : __('site.Add To Favoirtes');
   } // end of getIsFavoredAttribute
-
-  // return  product total price which  has no offers
-  public function getProductTotalHasNotOfferAttribute()
-  {
-
-    if ($this->checkIfHasOffer() || $this->discount > 0 || $this->hot_deal == 1)
-      return 0;
-
-    $total = 0;
-
-    if ($this->inCart) {
-
-      $product  = getCustomer()->products->where('id', $this->id)->first();
-
-      $total = $product->pivot->qty * $this->total;
-    }
-
-    return $total;
-  } // end of image path attribute
 
   public function getVideoHtmlAttribute()
   {
@@ -287,7 +281,7 @@ class Product extends Model
     ]);
   }
 
-  public function productSeller()
+  public function productSellers()
   {
     return $this->hasMany(ProductSeller::class);
   } // end of user

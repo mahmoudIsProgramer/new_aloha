@@ -23,21 +23,6 @@ if (!function_exists('bannerLocations')) {
   }
 }
 
-
-if (!function_exists('removeSession')) {
-  function removeSession()
-  {
-    session()->forget('merchanttransactionId');
-    session()->forget('type_delivery');
-    session()->forget('coupon');
-    session()->forget('city_id');
-    session()->forget('state_id');
-    session()->forget('totla_delivery');
-    return true;
-  }
-}
-
-
 if (!function_exists('background')) {
   function background($key = '')
   {
@@ -50,8 +35,7 @@ if (!function_exists('paymentMethods')) {
   function paymentMethods($type = null)
   {
     if ($type == 'str') {
-      return 'payOnline,wallet';
-      // return 'cacheOnDelivery,payOnline,wallet';
+      return 'cashOnDelivery,payOnline';
     }
 
     return ['payOnline', 'wallet'];
@@ -302,22 +286,6 @@ if (!function_exists('orderStatusAsString')) {
   }
 }
 
-
-if (!function_exists('getTaxes')) {
-  function getTaxes($total)
-  {
-
-    $values_amount = Tax::Active()->where('type', 'value')->sum('value') ?? 0;
-    $percents = Tax::Active()->where('type', 'percent')->get();
-    $percent_amount = 0;
-
-    foreach ($percents as $key => $value) {
-      $percent_amount = $percent_amount + ($total * $value->value * 0.01);
-    }
-
-    return $values_amount + $percent_amount;
-  }
-}
 
 if (!function_exists('getCurrencies')) {
   function getCurrencies()

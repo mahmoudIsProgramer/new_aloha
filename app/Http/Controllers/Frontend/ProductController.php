@@ -20,7 +20,7 @@ class ProductController extends Controller
       'reviews' => function ($q) {
         return $q->Active()->get();
       },
-      'productSeller'
+      // 'productSellers'
     ]);
 
     $seller = $product->selectedSeller(request('seller_id'));

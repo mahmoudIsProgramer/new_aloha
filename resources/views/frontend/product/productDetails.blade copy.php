@@ -87,7 +87,7 @@ $page = 'productDetails';
                                                     <button type="button" class="qty-minus"></button>
                                                     <input name="qty" type="number" min='1' max='{{ $productSeller->stock }}'
                                                         class="qty-adj form-control"
-                                                        value="{{ old('qty', $productSeller->qtyInCart ) }}">
+                                                        value="{{ old('qty', $product->qtyInCart($seller->id)) }}">
                                                     <button type="button" class="qty-plus"></button>
                                                 </div>
                                             </div>

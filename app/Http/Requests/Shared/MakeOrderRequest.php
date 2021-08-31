@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Http\Requests\FrontEnd;
+namespace App\Http\Requests\Shared;
 
-use App\Promocode;
-use App\Rules\CheckWalletCharged;
+use App\Models\Promocode;
 use Illuminate\Foundation\Http\FormRequest;
 
 class MakeOrderRequest extends FormRequest
@@ -32,21 +31,21 @@ class MakeOrderRequest extends FormRequest
     $customer = getCustomer();
 
     $this->rules += [
+      'address_id' => 'required|exists:addresses,id',
+      'payment_method' => ['bail', 'required',  'in:' . paymentMethods('str'), function ($attribute, $value, $fail) use ($customer) {
 
-      'payment_method' => ['bail', 'required',  new CheckWalletCharged(request()->payment_method, $customer, $customer->total_cart),  'in:' . paymentMethods('str'), function ($attribute, $value, $fail) use ($customer) {
-
-        $total = $customer->total_cart;
+        $total = $customer->totalCart;
         #reject coupon if it's value greater than total of order
         if ($total == 0) {
           $fail(__('site.Cart Is Empty'));
         }
 
         #check product stock befor make order
-        foreach ($customer->products as $product) {
+        foreach ($customer->productSellers as $productSeller) {
 
           #check stock
-          if ($product->stock < $product->pivot->qty) {
-            $fail(__('site.Some Products Out Of Stock', ['productName' => $product->name]));
+          if ($productSeller->stock < $productSeller->pivot->qty) {
+            $fail(__('site.Some Products Out Of Stock', ['productName' => $productSeller->name]));
           }
         }
       }],
@@ -84,7 +83,6 @@ class MakeOrderRequest extends FormRequest
           }
         }
       }],
-      'city_id' => ['required'],
     ];
 
 

@@ -57,7 +57,6 @@
     {{-- wishlist --}}
     @include('frontend.components.app.wishlist')
 
-
     {{-- settings --}}
     @include('frontend.components.app.settings')
 
@@ -66,6 +65,8 @@
 
     {{-- scripts --}}
     @include('frontend.components.app.scripts')
+
+    @stack('scripts')
 
 </body>
 

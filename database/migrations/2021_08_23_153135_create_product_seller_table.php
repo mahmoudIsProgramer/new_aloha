@@ -19,6 +19,7 @@ class CreateProductSellerTable extends Migration
       $table->integer('stock')->nullable()->default(0);
       $table->string('status')->nullable()->default(0); // accept or reject this seller to sell this product
 
+      $table->double('count_solid')->nullable();
       $table->double('selling_price')->nullable();
       $table->double('discount')->nullable();
       $table->string('sku')->nullable();

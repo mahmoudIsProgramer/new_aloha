@@ -28,12 +28,13 @@ class HomeController extends Controller
     $mainSliders = Slider::whenPosition('main')->latest()->get();
     $rightSliders = Slider::whenPosition('right')->limit(3)->latest()->get();
     $bottomSliders = Slider::whenPosition('bottom')->limit(2)->latest()->get();
+
     $categoryHome = Category::showOnHomePage()->Active()->latest()->limit(20)->get();
 
-    // $blogs   = Blog::latest()->take(10)->get();
     $brands   = Brand::active()->latest()->get();
 
     $products  = Product::active()->latest()->limit(10)->get();
+    $hotDeals  = Product::active()->latest()->limit(10)->get();
 
     $home_page_1_banner = Banner::where('bannerLocation', 'home_page_1')->first();
     $home_page_2_banner = Banner::where('bannerLocation', 'home_page_2')->first();
@@ -59,9 +60,9 @@ class HomeController extends Controller
     if ($request->ajax()) {
 
       $data = Product::when($request->search, function ($search) use ($request) {
-        return $search->whereTranslationLike('name', '%' . $request->search . '%');
-        // ->orWhereTranslationLike('short_description', '%' . $request->search . '%')
-        // ->orWhereTranslationLike('description', '%' . $request->search . '%')
+        return $search->whereTranslationLike('name', '%' . $request->search . '%')
+          ->orWhereTranslationLike('short_description', '%' . $request->search . '%')
+          ->orWhereTranslationLike('description', '%' . $request->search . '%');
       })->limit(15)->get();
 
       // dd($data->count());
