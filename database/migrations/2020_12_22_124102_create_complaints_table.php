@@ -28,6 +28,9 @@ class CreateComplaintsTable extends Migration
       $table->integer('customer_id')->unsigned()->nullable();
       $table->foreign('customer_id')->references('id')->on('customers')->onDelete('cascade');
 
+      $table->integer('seller_id')->unsigned()->nullable();
+      $table->foreign('seller_id')->references('id')->on('sellers')->onDelete('cascade');
+
       $table->timestamps();
     });
   }

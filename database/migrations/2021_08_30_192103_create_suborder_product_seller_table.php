@@ -18,7 +18,6 @@ class CreateSuborderProductSellerTable extends Migration
 
       $table->integer('qty')->nullable();
       $table->integer('price')->nullable();
-      $table->integer('price_before_discount')->nullable();
       $table->integer('total')->nullable();  // price * qty
       $table->string('status')->default('solid'); // solid,  returned
 
